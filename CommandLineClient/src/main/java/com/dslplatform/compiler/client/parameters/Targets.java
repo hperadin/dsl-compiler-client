@@ -106,7 +106,7 @@ public enum Targets implements CompileParameter, ParameterParser {
 
 		@Override
 		public String toString() {
-			return value;
+			return this.value;
 		}
 	}
 
