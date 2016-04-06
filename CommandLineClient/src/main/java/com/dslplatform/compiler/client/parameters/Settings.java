@@ -14,7 +14,7 @@ public enum Settings implements CompileParameter, ParameterParser {
 	@Override
 	public String getUsage() { return "options"; }
 
-	public enum Option {
+	public enum Option implements ParameterOption {
 		ACTIVE_RECORD("active-record", "Active record pattern in client libraries"),
 		UTC("utc", "Timestamp should use UTC by default"),
 		JACKSON("jackson", "Add Jackson annotations"),
@@ -50,6 +50,16 @@ public enum Settings implements CompileParameter, ParameterParser {
 		@Override
 		public String toString() {
 			return value;
+		}
+
+		@Override
+		public String getValue() {
+			return this.value;
+		}
+
+		@Override
+		public String getDescription() {
+			return this.description;
 		}
 	}
 

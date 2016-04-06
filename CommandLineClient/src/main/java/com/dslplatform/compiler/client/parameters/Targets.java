@@ -50,7 +50,7 @@ public enum Targets implements CompileParameter, ParameterParser {
 			"gac/PresentationCore"
 	};
 
-	public enum Option {
+	public enum Option implements ParameterOption {
 		REVENJ_JAVA("revenj.java", "Revenj.Java server for Postgres", ".java", new CompileRevenjJava("revenj.java", "revenj-java", "revenj-servlet", "revenj-storage"), true),
 		REVENJ_JAVA_POSTGRES("java_server_postgres", "Revenj.Java server for Postgres", ".java", new CompileRevenjJava("java_server_postgres", "revenj-java", "revenj-servlet", "revenj-storage"), true),
 		REVENJ_SPRING("revenj.spring", "Revenj.Java server for Spring with Postgres", ".java", new CompileRevenjJava("revenj.spring", "revenj-spring", "revenj-spring", "revenj-storage"), true),
@@ -102,6 +102,14 @@ public enum Targets implements CompileParameter, ParameterParser {
 				}
 			}
 			return null;
+		}
+
+		public String getValue() {
+			return this.value;
+		}
+
+		public String getDescription() {
+			return this.description;
 		}
 	}
 

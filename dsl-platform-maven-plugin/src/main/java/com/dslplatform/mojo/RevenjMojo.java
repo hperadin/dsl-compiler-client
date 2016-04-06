@@ -20,8 +20,15 @@ public class RevenjMojo
     @Parameter(property = "dslPath")
     private String _dslPath;
 
+    @Parameter(property = "tempPath")
+    private String _tempPath;
+
     public void setDslPath(String dslPath) throws MojoExecutionException {
         this._dslPath = Utils.resourceAbsolutePath(dslPath);
+    }
+
+    public void setTempPath(String tempPath) throws MojoExecutionException {
+        this._tempPath = Utils.resourceAbsolutePath(tempPath);
     }
 
     public void execute()
@@ -30,22 +37,18 @@ public class RevenjMojo
         try {
             MojoContext context = new MojoContext();
 
-            context.put(Targets.INSTANCE, "revenj.java");
+            context.put(Targets.Option.REVENJ_JAVA);
             context.put(DslPath.INSTANCE, _dslPath);
-            context.put(Download.INSTANCE, null);
+            context.put(Download.INSTANCE);
             //context.put(Dependencies.INSTANCE, "temp");
             //context.put(Prompt.INSTANCE, null);
-            context.put(Force.INSTANCE, null);
-            context.put(LogOutput.INSTANCE, null);
+            context.put(Force.INSTANCE);
+            context.put(LogOutput.INSTANCE  );
 
             List<CompileParameter> params = Main.initializeParameters(context, ".");
 
             if(!Main.processContext(context, params)) {
                 throw new MojoExecutionException(context.errorLog.toString());
-            } else {
-                System.out.println(context.showLog.toString());
-                System.out.println(context.errorLog.toString());
-                System.out.println(context.traceLog.toString());
             }
 
             context.close();

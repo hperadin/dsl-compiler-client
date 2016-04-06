@@ -21,6 +21,18 @@ public class Context implements Closeable {
 	private boolean noPrompt;
 	private boolean withColor = true;
 
+	public void put(final ParameterOption option) {
+		put(option, null);
+	}
+
+	public void put(final ParameterOption option, String value) {
+		parameters.put(option.getValue(), value);
+	}
+
+	public void put(final CompileParameter parameter) {
+		put(parameter, null);
+	}
+
 	public void put(final CompileParameter parameter, final String value) {
 		if (parameter instanceof Prompt) {
 			noPrompt = true;
