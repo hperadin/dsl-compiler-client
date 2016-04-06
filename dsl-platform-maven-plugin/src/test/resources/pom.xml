@@ -24,7 +24,16 @@
 				<artifactId>dsl-platform-maven-plugin</artifactId>
 				<version>1.0-SNAPSHOT</version>
 				<configuration>
-					<dslPath>dsl/</dslPath>
+					<targets>
+						<revenj.java>target/revenj-java.jar</revenj.java>
+					</targets>
+					<compileParameters>
+						<dsl>dsl</dsl>
+						<temp>target/temp</temp>
+					</compileParameters>
+					<settings>
+						<setting>java-beans</setting>
+					</settings>
 				</configuration>
 			</plugin>
 		</plugins>

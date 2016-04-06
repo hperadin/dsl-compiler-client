@@ -21,7 +21,7 @@ public class RevenjMojoTest extends AbstractMojoTestCase {
         assertNotNull( pom );
         assertTrue( pom.exists() );
 
-        RevenjMojo myMojo = (RevenjMojo) lookupMojo( "revenj_java", pom );
+        RevenjMojo myMojo = (RevenjMojo) lookupMojo( "execute", pom );
         assertNotNull( myMojo );
         myMojo.execute();
     }
