@@ -24,16 +24,9 @@
 				<artifactId>dsl-platform-maven-plugin</artifactId>
 				<version>1.0-SNAPSHOT</version>
 				<configuration>
-					<targets>
-						<revenj.java>target/revenj-java.jar</revenj.java>
-					</targets>
-					<compileParameters>
-						<dsl>dsl</dsl>
-						<temp>target/temp</temp>
-					</compileParameters>
-					<settings>
-						<setting>java-beans</setting>
-					</settings>
+					<postgres>localhost:5432/wonders_db?user=wonders_user&amp;password=wonders_pass</postgres>
+					<dsl>dsl</dsl>
+					<apply>true</apply>
 				</configuration>
 			</plugin>
 		</plugins>

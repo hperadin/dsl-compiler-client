@@ -62,12 +62,14 @@ public class MojoContext extends Context {
     }
 
     public MojoContext with(List<Settings.Option> settings) {
+        if(settings != null)
         for(Settings.Option option : settings)
             this.with(option);
         return this;
     }
 
     public <K> MojoContext with(Map<K, String> compileParameters) {
+        if(compileParameters != null)
         for(Map.Entry<K, String> kv : compileParameters.entrySet()) {
             K parameter = kv.getKey();
             String value = kv.getValue();

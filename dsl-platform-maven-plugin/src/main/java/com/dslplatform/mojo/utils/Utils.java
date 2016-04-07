@@ -1,13 +1,14 @@
-package com.dslplatform.mojo;
+package com.dslplatform.mojo.utils;
 
 import com.dslplatform.compiler.client.CompileParameter;
 import com.dslplatform.compiler.client.parameters.Settings;
 import com.dslplatform.compiler.client.parameters.Targets;
 import com.dslplatform.compiler.client.parameters.*;
-import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Utils {
 
@@ -43,12 +44,7 @@ public class Utils {
         ScalaPath.INSTANCE
     };
 
-    private final Log log;
-    public Utils(Log log) {
-        this.log = log;
-    }
-
-    public String resourceAbsolutePath(String resource) {
+    public static String resourceAbsolutePath(String resource) {
         if(resource == null) return null;
 
         try {
@@ -66,15 +62,12 @@ public class Utils {
         return null;
     }
 
-    public String createDirIfNotExists(String dir) {
-        String absolutePath = resourceAbsolutePath(dir);
-        if(absolutePath == null) {
-            File file = new File(dir);
-            if(!file.exists())
-                file.mkdirs();
-            return resourceAbsolutePath(dir);
-        }
-        return absolutePath;
+    public static String createDirIfNotExists(String dir) {
+        if(dir == null) return null;
+        File file = new File(dir);
+        if(!file.exists())
+            file.mkdirs();
+        return file.getAbsolutePath();
     }
 
     public static Targets.Option targetOptionFrom(String value) {
@@ -98,10 +91,44 @@ public class Utils {
         return null;
     }
 
-    private static <T> boolean nulleq(T left, T right) {
+    public static <T> boolean nulleq(T left, T right) {
         if(left == null && right == null) return true;
         if(left != null) return left.equals(right);
         if(right != null) return right.equals(left);
         return false;
+    }
+
+    public static String deNullify(String string) {
+        return string == null ? "" : string;
+    }
+
+    public static void sanitizeDirectories(Map<CompileParameter, String> compileParametersParsed) {
+        for(Map.Entry<CompileParameter, String> kv : compileParametersParsed.entrySet()) {
+            CompileParameter cp = kv.getKey();
+            String value = kv.getValue();
+
+            if(cp instanceof TempPath) {
+                compileParametersParsed.put(cp, createDirIfNotExists(value));
+            }
+
+            if(cp instanceof DslPath) {
+                compileParametersParsed.put(cp, resourceAbsolutePath(value));
+            }
+
+            if(cp instanceof SqlPath) {
+                compileParametersParsed.put(cp, resourceAbsolutePath(value));
+            }
+        }
+    }
+
+    public static void cleanupParameters(Map<CompileParameter, String> compileParametersParsed) {
+        // Disallow custom temp path
+        Iterator<Map.Entry<CompileParameter, String>> it = compileParametersParsed.entrySet().iterator();
+        while(it.hasNext()) {
+            // Disallow custom temp path
+            if(TempPath.INSTANCE.equals(it.next().getKey())) {
+                it.remove();
+            }
+        }
     }
 }
