@@ -418,6 +418,4 @@ public abstract class Utils {
 		}
 		return list;
 	}
-
-
 }

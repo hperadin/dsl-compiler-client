@@ -44,6 +44,10 @@ public class Utils {
         ScalaPath.INSTANCE
     };
 
+    /**
+     * @deprecated This is a bad idea, we should just use direct paths
+     */
+    @Deprecated
     public static String resourceAbsolutePath(String resource) {
         if(resource == null) return null;
 
@@ -111,13 +115,14 @@ public class Utils {
                 compileParametersParsed.put(cp, createDirIfNotExists(value));
             }
 
+            /*
             if(cp instanceof DslPath) {
                 compileParametersParsed.put(cp, resourceAbsolutePath(value));
             }
 
             if(cp instanceof SqlPath) {
                 compileParametersParsed.put(cp, resourceAbsolutePath(value));
-            }
+            }*/
         }
     }
 

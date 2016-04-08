@@ -11,6 +11,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,32 +25,67 @@ public class GenerateCodeMojo extends AbstractMojo {
 
     public static final String GOAL = "generate-code";
 
-    @Parameter(defaultValue = "src/generated/java")
+    private static final String SERVICES_FILE = "org.revenj.extensibility.SystemAspect";
+
+    @Parameter
+    private MavenProject project;
+
+    @Parameter(defaultValue = "target/generated-sources")
     private String generatedSourcesTarget;
 
-    @Parameter(defaultValue = "src/main/resources/META-INF/services")
+    @Parameter(defaultValue = "target/classes/META-INF/services")
     private String servicesManifestTarget;
 
     @Parameter(property = "target")
-    private String target_;
+    private String compileTarget;
 
     @Parameter(property = "dsl")
-    private String dsl_;
+    private String dslPath;
+
+    @Parameter(property = "namespaceString")
+    private String namespaceString;
 
     private Targets.Option targetParsed;
     private Map<CompileParameter, String> compileParametersParsed = new HashMap<CompileParameter, String>();
     private Map<Settings.Option, String> flagsParsed = new HashMap<Settings.Option, String>();
 
+    public String getGeneratedSourcesTarget() {
+        return generatedSourcesTarget;
+    }
+
+    public String getServicesManifestTarget() {
+        return servicesManifestTarget;
+    }
+
+    public String getTarget() {
+        return compileTarget;
+    }
+
+    public String getDsl() {
+        return dslPath;
+    }
+
+    public String getNamespace() {
+        return this.namespaceString;
+    }
+
     public void setTarget(String target) {
+        System.out.println("Target: " + target);
         if(target == null) return;
-        this.target_ = target;
+        this.compileTarget = target;
         this.targetParsed = Utils.targetOptionFrom(target);
+        System.out.println("Target: " + targetParsed);
     }
 
     public void setDsl(String dsl) {
         if(dsl == null) return;
-        this.dsl_ = dsl;
+        this.dslPath = dsl;
         compileParametersParsed.put(DslPath.INSTANCE, dsl);
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespaceString = namespace;
+        compileParametersParsed.put(Namespace.INSTANCE, namespace);
     }
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -75,6 +111,7 @@ public class GenerateCodeMojo extends AbstractMojo {
             // Copy generated sources
             copyGeneratedSources(context);
             registerServices(context);
+            // TODO: project.addCompileSourceRoot(this.generatedSourcesTarget);
         }
 
         context.close();
@@ -85,7 +122,7 @@ public class GenerateCodeMojo extends AbstractMojo {
             String namespace = context.get(Namespace.INSTANCE);
             String service = namespace == null ? "Boot" : namespace + ".Boot";
             Utils.createDirIfNotExists(this.servicesManifestTarget);
-            File servicesRegistration = new File(servicesManifestTarget, "org.revenj.extensibility.SystemAspect");
+            File servicesRegistration = new File(servicesManifestTarget, SERVICES_FILE);
             FileUtils.write(servicesRegistration, service, "UTF-8");
         } catch (IOException e){
             throw new MojoExecutionException("Error writing the services registration file.", e);
@@ -102,4 +139,6 @@ public class GenerateCodeMojo extends AbstractMojo {
             throw new MojoExecutionException("Error copying the generated sources", e);
         }
     }
+
+
 }

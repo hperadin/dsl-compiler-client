@@ -24,8 +24,8 @@
 				<artifactId>dsl-platform-maven-plugin</artifactId>
 				<version>1.0-SNAPSHOT</version>
 				<configuration>
-					<postgres>localhost:5432/wonders_db?user=wonders_user&amp;password=wonders_pass</postgres>
-					<dsl>dsl</dsl>
+					<postgres>localhost:5429/test_db?user=test_user&amp;password=test_pass</postgres>
+					<dsl>src/test/resources/dsl</dsl>
 					<apply>true</apply>
 				</configuration>
 			</plugin>

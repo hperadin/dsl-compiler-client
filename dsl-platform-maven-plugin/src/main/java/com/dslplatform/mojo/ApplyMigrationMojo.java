@@ -43,14 +43,22 @@ public class ApplyMigrationMojo extends AbstractMojo {
 
     public void setDsl(String path){
         if(path == null) return;
-        this.dslPath = Utils.resourceAbsolutePath(path);
+        this.dslPath = path;
         compileParametersParsed.put(DslPath.INSTANCE, this.dslPath);
+    }
+
+    public String getDsl() {
+        return this.dslPath;
     }
 
     public void setSql(String path){
         if(path == null) return;
-        this.sqlPath = Utils.resourceAbsolutePath(path);
+        this.sqlPath = path;
         compileParametersParsed.put(SqlPath.INSTANCE, this.sqlPath);
+    }
+
+    public String getSql() {
+        return this.sqlPath;
     }
 
     public void setPostgres(String connectionString){
@@ -59,10 +67,18 @@ public class ApplyMigrationMojo extends AbstractMojo {
         compileParametersParsed.put(PostgresConnection.INSTANCE, this.postgresConnectionString);
     }
 
+    public String getPostgres() {
+        return this.postgresConnectionString;
+    }
+
     public void setOracle(String connectionString){
         if(connectionString == null) return;
         this.oracleConnectionString = connectionString;
         compileParametersParsed.put(OracleConnection.INSTANCE, this.oracleConnectionString);
+    }
+
+    public String getOracle() {
+        return this.oracleConnectionString;
     }
 
 
