@@ -5,7 +5,6 @@ import com.dslplatform.compiler.client.Main;
 import com.dslplatform.compiler.client.parameters.*;
 import com.dslplatform.mojo.context.MojoContext;
 import com.dslplatform.mojo.utils.Utils;
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -14,13 +13,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.dslplatform.mojo.utils.Utils.*;
-import static org.apache.commons.io.FileUtils.copyDirectory;
 
 @Mojo(name = GenerateCodeMojo.GOAL)
 public class GenerateCodeMojo extends AbstractMojo {
@@ -38,13 +33,13 @@ public class GenerateCodeMojo extends AbstractMojo {
 	@Parameter(defaultValue = "target/classes/META-INF/services")
 	private String servicesManifestTarget;
 
-	@Parameter(property = "target")
+	@Parameter(name = "target", property = "target", required = true)
 	private String compileTarget;
 
-	@Parameter(property = "dsl")
+	@Parameter(name = "dsl", property = "dsl", defaultValue = "dsl")
 	private String dslPath;
 
-	@Parameter(property = "namespaceString")
+	@Parameter(name = "namespace", property = "namespace", defaultValue="")
 	private String namespaceString;
 
 	private Targets.Option targetParsed;
@@ -91,9 +86,9 @@ public class GenerateCodeMojo extends AbstractMojo {
 	}
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		cleanupParameters(this.compileParametersParsed);
+		Utils.cleanupParameters(this.compileParametersParsed);
 		// TODO: Default values
-		sanitizeDirectories(this.compileParametersParsed);
+		Utils.sanitizeDirectories(this.compileParametersParsed);
 
 		MojoContext context = new MojoContext(getLog())
 				.with(this.targetParsed)
@@ -112,33 +107,26 @@ public class GenerateCodeMojo extends AbstractMojo {
 			// Copy generated sources
 			copyGeneratedSources(context);
 			registerServices(context);
-			// TODO: project.addCompileSourceRoot(this.generatedSourcesTarget);
+			// This supposedly adds generated sources to maven compile classpath:
+			//project.addCompileSourceRoot(this.generatedSourcesTarget);
 		}
 
 		context.close();
 	}
 
 	protected void registerServices(MojoContext context) throws MojoExecutionException {
-		try {
-			String namespace = context.get(Namespace.INSTANCE);
-			String service = namespace == null ? "Boot" : namespace + ".Boot";
-			Utils.createDirIfNotExists(this.servicesManifestTarget);
-			File servicesRegistration = new File(servicesManifestTarget, SERVICES_FILE);
-			FileUtils.write(servicesRegistration, service, "UTF-8");
-		} catch (IOException e) {
-			throw new MojoExecutionException("Error writing the services registration file.", e);
-		}
+		String namespace = context.get(Namespace.INSTANCE);
+		String service = namespace == null ? "Boot" : namespace + ".Boot";
+		Utils.createDirIfNotExists(this.servicesManifestTarget);
+		File servicesRegistration = new File(servicesManifestTarget, SERVICES_FILE);
+		Utils.writeToFile(servicesRegistration, service, "UTF-8");
 	}
 
 	private void copyGeneratedSources(MojoContext context) throws MojoExecutionException {
 		File tmpPath = TempPath.getTempProjectPath(context);
 		File generatedSources = new File(tmpPath.getAbsolutePath(), targetParsed.name());
-		try {
-			createDirIfNotExists(this.generatedSourcesTarget);
-			copyDirectory(generatedSources, new File(this.generatedSourcesTarget));
-		} catch (IOException e) {
-			throw new MojoExecutionException("Error copying the generated sources", e);
-		}
+		Utils.createDirIfNotExists(this.generatedSourcesTarget);
+		Utils.copyFolder(generatedSources, new File(this.generatedSourcesTarget), context);
 	}
 
 

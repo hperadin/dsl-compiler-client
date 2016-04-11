@@ -10,9 +10,6 @@ import org.junit.runners.JUnit4;
 
 import java.io.File;
 
-import static com.dslplatform.mojo.TestUtils.assertDir;
-import static com.dslplatform.mojo.TestUtils.assertFile;
-
 @RunWith(JUnit4.class)
 public class GenerateCodeMojoIntegrationTest extends AbstractMojoTestCase {
 
@@ -38,18 +35,18 @@ public class GenerateCodeMojoIntegrationTest extends AbstractMojoTestCase {
 		mojo.execute();
 
 		String sourcesPath = mojo.getGeneratedSourcesTarget();
-		assertDir(sourcesPath);
-		assertDir(sourcesPath + "/MojoTestModule");
-		assertFile(sourcesPath + "/MojoTestModule/MojoTestAggregate.java");
-		assertDir(sourcesPath + "/MojoTestModule/converters");
-		assertFile(sourcesPath + "/MojoTestModule/converters/MojoTestAggregateConverter.java");
-		assertFile(sourcesPath + "/Boot.java");
+		TestUtils.assertDir(sourcesPath);
+		TestUtils.assertDir(sourcesPath + "/MojoTestModule");
+		TestUtils.assertFile(sourcesPath + "/MojoTestModule/MojoTestAggregate.java");
+		TestUtils.assertDir(sourcesPath + "/MojoTestModule/converters");
+		TestUtils.assertFile(sourcesPath + "/MojoTestModule/converters/MojoTestAggregateConverter.java");
+		TestUtils.assertFile(sourcesPath + "/Boot.java");
 
 		File servicesDir = new File(mojo.getServicesManifestTarget());
-		assertDir(servicesDir.getAbsolutePath());
+		TestUtils.assertDir(servicesDir.getAbsolutePath());
 
 		File servicesFile = new File(servicesDir, "org.revenj.extensibility.SystemAspect");
-		assertFile(servicesFile.getAbsolutePath());
+		TestUtils.assertFile(servicesFile.getAbsolutePath());
 
 		String namespace = mojo.getNamespace();
 		assertEquals(namespace != null ? namespace + ".Boot" : "Boot", FileUtils.readFileToString(servicesFile));

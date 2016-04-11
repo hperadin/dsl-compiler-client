@@ -15,27 +15,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.dslplatform.mojo.utils.Utils.cleanupParameters;
-import static com.dslplatform.mojo.utils.Utils.sanitizeDirectories;
-
 @Mojo(name = ApplyMigrationMojo.GOAL)
 public class ApplyMigrationMojo extends AbstractMojo {
 
 	public static final String GOAL = "apply-migration";
 
-	@Parameter(name = "dsl")
+	@Parameter(name = "dsl", property = "dsl", defaultValue = "dsl")
 	private String dslPath;
 
-	@Parameter(name = "sql")
+	@Parameter(name = "sql", property = "sql", defaultValue = "sql")
 	private String sqlPath;
 
-	@Parameter(name = "postgres")
+	@Parameter(name = "postgres", property = "postgres")
 	private String postgresConnectionString;
 
-	@Parameter(name = "oracle")
+	@Parameter(name = "oracle", property = "oracle")
 	private String oracleConnectionString;
 
-	@Parameter(name = "apply")
+	@Parameter(name = "apply", property = "apply", defaultValue = "true")
 	private boolean apply;
 
 	private Map<CompileParameter, String> compileParametersParsed = new HashMap<CompileParameter, String>();
@@ -83,9 +80,9 @@ public class ApplyMigrationMojo extends AbstractMojo {
 
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		cleanupParameters(this.compileParametersParsed);
+		Utils.cleanupParameters(this.compileParametersParsed);
 		// TODO: Default values
-		sanitizeDirectories(this.compileParametersParsed);
+		Utils.sanitizeDirectories(this.compileParametersParsed);
 
 		MojoContext context = new MojoContext(getLog())
 				.with(this.flagsParsed)

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.dslplatform</groupId>
+    <artifactId>dsl-platform-maven-plugin-example</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.dslplatform</groupId>
+                <artifactId>dsl-platform-maven-plugin</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>dsl-platform-generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate-code</goal>
+                        </goals>
+                        <configuration>
+                            <generatedSourcesTarget>target/generated-sources</generatedSourcesTarget>
+                            <servicesManifestTarget>target/classes/META-INF/services</servicesManifestTarget>
+                            <target>revenj.java</target>
+                            <dsl>src/main/resources/dsl</dsl>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>dsl-platform-process-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>apply-migration</goal>
+                        </goals>
+                        <configuration>
+                            <postgres>localhost:5432/test_db?user=test_user&amp;password=test_pass</postgres>
+                            <dsl>src/main/resources/dsl</dsl>
+                            <apply>true</apply>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    
+</project>

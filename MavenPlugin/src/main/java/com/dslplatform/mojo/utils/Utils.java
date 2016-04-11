@@ -1,10 +1,17 @@
 package com.dslplatform.mojo.utils;
 
 import com.dslplatform.compiler.client.CompileParameter;
+import com.dslplatform.compiler.client.Context;
+import com.dslplatform.compiler.client.Either;
 import com.dslplatform.compiler.client.parameters.*;
+import com.google.common.primitives.Chars;
+import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -64,11 +71,14 @@ public class Utils {
 		return null;
 	}
 
-	public static String createDirIfNotExists(String dir) {
+	public static String createDirIfNotExists(String dir) throws MojoExecutionException {
 		if (dir == null) return null;
 		File file = new File(dir);
-		if (!file.exists())
-			file.mkdirs();
+		if (!file.exists()) {
+			if(!file.mkdirs()) {
+				throw new MojoExecutionException("Error creating the dirs: " + file.getAbsolutePath());
+			}
+		}
 		return file.getAbsolutePath();
 	}
 
@@ -104,7 +114,7 @@ public class Utils {
 		return string == null ? "" : string;
 	}
 
-	public static void sanitizeDirectories(Map<CompileParameter, String> compileParametersParsed) {
+	public static void sanitizeDirectories(Map<CompileParameter, String> compileParametersParsed) throws MojoExecutionException {
 		for (Map.Entry<CompileParameter, String> kv : compileParametersParsed.entrySet()) {
 			CompileParameter cp = kv.getKey();
 			String value = kv.getValue();
@@ -132,6 +142,45 @@ public class Utils {
 			if (TempPath.INSTANCE.equals(it.next().getKey())) {
 				it.remove();
 			}
+		}
+	}
+
+	public static void copyFolder(final File sources, final File target, final Context context) throws MojoExecutionException {
+		for (final String fn : sources.list()) {
+			final File sf = new File(sources, fn);
+			final File tf = new File(target, fn);
+			if (sf.isDirectory()) {
+				if (!tf.mkdirs()) {
+					String msg = "Failed to create target folder: " + tf.getAbsolutePath();
+					context.error(msg);
+					throw new MojoExecutionException(msg);
+				}
+				copyFolder(sf, tf, context);
+			} else {
+				final Either<String> content = com.dslplatform.compiler.client.Utils.readFile(sf);
+				if (!content.isSuccess()) {
+					String msg = "Error reading source file: " + sf.getAbsolutePath();
+					context.error(msg);
+					throw new MojoExecutionException(msg);
+				}
+				try {
+					com.dslplatform.compiler.client.Utils.saveFile(context, tf, content.get());
+				} catch (IOException ex) {
+					String msg = "Error writing target file: " + tf.getAbsolutePath();
+					context.error(msg);
+					throw new MojoExecutionException(msg);
+				}
+			}
+		}
+	}
+
+	public static void writeToFile(File file, String contents, String charsetName) throws MojoExecutionException {
+		try {
+			FileOutputStream out = new FileOutputStream(file.getAbsolutePath());
+			out.write(contents.getBytes(Charset.forName(charsetName)));
+			out.close();
+		} catch(Exception e) {
+			throw new MojoExecutionException("Error writing to file: " + file.getAbsolutePath() + ", contents: " + contents);
 		}
 	}
 }

@@ -5,24 +5,23 @@ import com.dslplatform.compiler.client.Main;
 import com.dslplatform.compiler.client.parameters.*;
 import com.dslplatform.mojo.context.MojoContext;
 import com.dslplatform.mojo.utils.Utils;
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.dslplatform.mojo.utils.Utils.*;
-import static org.apache.commons.io.FileUtils.copyDirectory;
-
-@Mojo(name = DslPlatformMojo.GOAL)
+/**
+ * This was the first POC mojo, allows for executing all
+ * dsl-clc goals.
+ */
+@Deprecated
+//@Mojo(name = DslPlatformMojo.GOAL)
 public class DslPlatformMojo
 		extends AbstractMojo {
 
@@ -53,7 +52,7 @@ public class DslPlatformMojo
 			String key = kv.getKey();
 			String value = kv.getValue();
 
-			Targets.Option option = targetOptionFrom(key);
+			Targets.Option option = Utils.targetOptionFrom(key);
 			if (option != null) this.targetsParsed.put(option, value);
 		}
 	}
@@ -66,7 +65,7 @@ public class DslPlatformMojo
 		this.flagsParsed = new ArrayList<Settings.Option>(flags.length);
 		for (String setting : flags) {
 
-			Settings.Option option = settingsOptionFrom(setting);
+			Settings.Option option = Utils.settingsOptionFrom(setting);
 			if (option != null) this.flagsParsed.add(option);
 		}
 	}
@@ -81,16 +80,16 @@ public class DslPlatformMojo
 			String key = kv.getKey();
 			String value = kv.getValue();
 
-			CompileParameter compileParameter = compileParameterFrom(key);
+			CompileParameter compileParameter = Utils.compileParameterFrom(key);
 			if (compileParameter != null) this.compileParametersParsed.put(compileParameter, value);
 		}
 	}
 
 	public void execute()
 			throws MojoExecutionException, MojoFailureException {
-		cleanupParameters(compileParametersParsed);
+		Utils.cleanupParameters(compileParametersParsed);
 		// TODO: Default values
-		sanitizeDirectories(compileParametersParsed);
+		Utils.sanitizeDirectories(compileParametersParsed);
 
 		MojoContext context = new MojoContext(getLog())
 				.with(targetsParsed)
@@ -114,32 +113,24 @@ public class DslPlatformMojo
 		context.close();
 	}
 
-	private void copyGeneratedSources(MojoContext context) throws MojoExecutionException {
+	private void copyGeneratedSources(MojoContext context) throws MojoExecutionException{
 		File tmpPath = TempPath.getTempProjectPath(context);
 		getLog().info("Temp path: " + tmpPath.getAbsolutePath());
 		for (Targets.Option target : this.targetsParsed.keySet()) {
 			// TODO: Multiple java targets will overwrite each other
 			File generatedSources = new File(tmpPath.getAbsolutePath(), target.name());
-			try {
-				createDirIfNotExists(this.generatedSourcesTarget);
-				copyDirectory(generatedSources, new File(this.generatedSourcesTarget));
-			} catch (IOException e) {
-				throw new MojoExecutionException("Error copying the generated sources", e);
-			}
+			Utils.createDirIfNotExists(this.generatedSourcesTarget);
+			Utils.copyFolder(generatedSources, new File(this.generatedSourcesTarget), context);
 		}
 	}
 
 	protected void registerServices(MojoContext context) throws MojoExecutionException {
 		// TODO: Add check if we generated code
-		try {
-			String namespace = context.get(Namespace.INSTANCE);
-			String service = namespace == null ? "Boot" : namespace + ".Boot";
-			Utils.createDirIfNotExists(this.servicesManifestTarget);
-			File servicesRegistration = new File(servicesManifestTarget, "org.revenj.extensibility.SystemAspect");
-			FileUtils.write(servicesRegistration, service, "UTF-8");
-		} catch (IOException e) {
-			throw new MojoExecutionException("Error writing the services registration file.", e);
-		}
+		String namespace = context.get(Namespace.INSTANCE);
+		String service = namespace == null ? "Boot" : namespace + ".Boot";
+		Utils.createDirIfNotExists(this.servicesManifestTarget);
+		File servicesRegistration = new File(servicesManifestTarget, "org.revenj.extensibility.SystemAspect");
+		Utils.writeToFile(servicesRegistration, service, "UTF-8");
 	}
 
 	protected <K, V> void write(Map<K, V> map) {

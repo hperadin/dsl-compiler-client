@@ -1,19 +1,19 @@
 package com.dslplatform.mojo;
 
-import java.io.File;
+import org.junit.Assert;
 
-import static org.junit.Assert.assertTrue;
+import java.io.File;
 
 public class TestUtils {
     static void assertDir(String path) {
         File dir = new File(path);
-        assertTrue("Does not exist: " + path, dir.exists());
-        assertTrue("Is not a directory.", dir.isDirectory());
+        Assert.assertTrue("Does not exist: " + path, dir.exists());
+        Assert.assertTrue("Is not a directory.", dir.isDirectory());
     }
 
     static void assertFile(String path) {
         File file = new File(path);
-        assertTrue("Does not exist: " + path, file.exists());
-        assertTrue("Is not a directory.", file.isFile());
+        Assert.assertTrue("Does not exist: " + path, file.exists());
+        Assert.assertTrue("Is not a directory.", file.isFile());
     }
 }
