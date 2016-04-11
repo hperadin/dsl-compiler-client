@@ -108,7 +108,7 @@ public class GenerateCodeMojo extends AbstractMojo {
 			copyGeneratedSources(context);
 			registerServices(context);
 			// This supposedly adds generated sources to maven compile classpath:
-			//project.addCompileSourceRoot(this.generatedSourcesTarget);
+			project.addCompileSourceRoot(this.generatedSourcesTarget);
 		}
 
 		context.close();

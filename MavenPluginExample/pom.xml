@@ -20,23 +20,14 @@
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate-code</goal>
+                            <goal>apply-migration</goal>
                         </goals>
                         <configuration>
                             <generatedSourcesTarget>target/generated-sources</generatedSourcesTarget>
                             <servicesManifestTarget>target/classes/META-INF/services</servicesManifestTarget>
                             <target>revenj.java</target>
                             <dsl>src/main/resources/dsl</dsl>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>dsl-platform-process-resources</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>apply-migration</goal>
-                        </goals>
-                        <configuration>
                             <postgres>localhost:5432/test_db?user=test_user&amp;password=test_pass</postgres>
-                            <dsl>src/main/resources/dsl</dsl>
                             <apply>true</apply>
                         </configuration>
                     </execution>
