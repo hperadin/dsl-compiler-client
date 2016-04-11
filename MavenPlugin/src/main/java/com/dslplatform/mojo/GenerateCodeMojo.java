@@ -24,14 +24,14 @@ public class GenerateCodeMojo extends AbstractMojo {
 
 	private static final String SERVICES_FILE = "org.revenj.extensibility.SystemAspect";
 
-	@Parameter
+	@Parameter(defaultValue = "${project}")
 	private MavenProject project;
 
-	@Parameter(defaultValue = "target/generated-sources")
-	private String generatedSourcesTarget;
+	@Parameter(name = "generatedSourcesTarget", property = "generatedSourcesTarget", defaultValue = "target/generated-sources")
+	private String generatedSourcesTarget_;
 
-	@Parameter(defaultValue = "target/classes/META-INF/services")
-	private String servicesManifestTarget;
+	@Parameter(name = "servicesManifestTarget", property = "servicesManifestTarget", defaultValue = "target/classes/META-INF/services")
+	private String servicesManifestTarget_;
 
 	@Parameter(name = "target", property = "target", required = true)
 	private String compileTarget;
@@ -46,12 +46,20 @@ public class GenerateCodeMojo extends AbstractMojo {
 	private Map<CompileParameter, String> compileParametersParsed = new HashMap<CompileParameter, String>();
 	private Map<Settings.Option, String> flagsParsed = new HashMap<Settings.Option, String>();
 
+	public void setGeneratedSourcesTarget(String generatedSourcesTarget_) {
+		this.generatedSourcesTarget_ = generatedSourcesTarget_;
+	}
+
 	public String getGeneratedSourcesTarget() {
-		return generatedSourcesTarget;
+		return generatedSourcesTarget_;
+	}
+
+	public void setServicesManifestTarget(String servicesManifestTarget_) {
+		this.servicesManifestTarget_ = servicesManifestTarget_;
 	}
 
 	public String getServicesManifestTarget() {
-		return servicesManifestTarget;
+		return servicesManifestTarget_;
 	}
 
 	public String getTarget() {
@@ -108,7 +116,10 @@ public class GenerateCodeMojo extends AbstractMojo {
 			copyGeneratedSources(context);
 			registerServices(context);
 			// This supposedly adds generated sources to maven compile classpath:
-			project.addCompileSourceRoot(this.generatedSourcesTarget);
+			if(project != null) {
+				System.out.println("The project is not null, adding generated sources target");
+				project.addCompileSourceRoot(this.generatedSourcesTarget_);
+			}
 		}
 
 		context.close();
@@ -117,16 +128,16 @@ public class GenerateCodeMojo extends AbstractMojo {
 	protected void registerServices(MojoContext context) throws MojoExecutionException {
 		String namespace = context.get(Namespace.INSTANCE);
 		String service = namespace == null ? "Boot" : namespace + ".Boot";
-		Utils.createDirIfNotExists(this.servicesManifestTarget);
-		File servicesRegistration = new File(servicesManifestTarget, SERVICES_FILE);
+		Utils.createDirIfNotExists(this.servicesManifestTarget_);
+		File servicesRegistration = new File(servicesManifestTarget_, SERVICES_FILE);
 		Utils.writeToFile(servicesRegistration, service, "UTF-8");
 	}
 
 	private void copyGeneratedSources(MojoContext context) throws MojoExecutionException {
 		File tmpPath = TempPath.getTempProjectPath(context);
 		File generatedSources = new File(tmpPath.getAbsolutePath(), targetParsed.name());
-		Utils.createDirIfNotExists(this.generatedSourcesTarget);
-		Utils.copyFolder(generatedSources, new File(this.generatedSourcesTarget), context);
+		Utils.createDirIfNotExists(this.generatedSourcesTarget_);
+		Utils.copyFolder(generatedSources, new File(this.generatedSourcesTarget_), context);
 	}
 
 

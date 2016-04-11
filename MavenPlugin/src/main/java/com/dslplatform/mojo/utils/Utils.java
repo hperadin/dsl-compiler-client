@@ -149,7 +149,7 @@ public class Utils {
 		for (final String fn : sources.list()) {
 			final File sf = new File(sources, fn);
 			final File tf = new File(target, fn);
-			if (sf.isDirectory()) {
+			if (sf.isDirectory() && !tf.exists()) {
 				if (!tf.mkdirs()) {
 					String msg = "Failed to create target folder: " + tf.getAbsolutePath();
 					context.error(msg);
