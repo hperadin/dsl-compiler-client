@@ -41,11 +41,11 @@ public class ApplyMigrationMojoIntegrationTest extends AbstractMojoTestCase {
 	@Test
 	public void testApplyMigration()
 			throws Exception {
-		File pom = getTestFile("src/test/resources/apply-migration-pom.xml");
+		File pom = getTestFile("src/test/resources/sql-migration-pom.xml");
 		assertNotNull(pom);
 		assertTrue(pom.exists());
 
-		ApplyMigrationMojo mojo = (ApplyMigrationMojo) lookupMojo(ApplyMigrationMojo.GOAL, pom);
+		SqlMigrationMojo mojo = (SqlMigrationMojo) lookupMojo(SqlMigrationMojo.GOAL, pom);
 		assertNotNull(mojo);
 
 		mojo.execute();

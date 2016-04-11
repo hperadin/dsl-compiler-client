@@ -46,6 +46,14 @@ public class GenerateCodeMojo extends AbstractMojo {
 	private Map<CompileParameter, String> compileParametersParsed = new HashMap<CompileParameter, String>();
 	private Map<Settings.Option, String> flagsParsed = new HashMap<Settings.Option, String>();
 
+	public MavenProject getProject() {
+		return project;
+	}
+
+	public void setProject(MavenProject project) {
+		this.project = project;
+	}
+
 	public void setGeneratedSourcesTarget(String generatedSourcesTarget_) {
 		this.generatedSourcesTarget_ = generatedSourcesTarget_;
 	}
@@ -116,10 +124,7 @@ public class GenerateCodeMojo extends AbstractMojo {
 			copyGeneratedSources(context);
 			registerServices(context);
 			// This supposedly adds generated sources to maven compile classpath:
-			if(project != null) {
-				System.out.println("The project is not null, adding generated sources target");
-				project.addCompileSourceRoot(this.generatedSourcesTarget_);
-			}
+			project.addCompileSourceRoot(this.generatedSourcesTarget_);
 		}
 
 		context.close();

@@ -16,11 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * This was the first POC mojo, allows for executing all
- * dsl-clc goals.
- */
-@Deprecated
 //@Mojo(name = DslPlatformMojo.GOAL)
 public class DslPlatformMojo
 		extends AbstractMojo {

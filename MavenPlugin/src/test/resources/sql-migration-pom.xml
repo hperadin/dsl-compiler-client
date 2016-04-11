@@ -27,7 +27,7 @@
 				<configuration>
 					<postgres>localhost:5429/test_db?user=test_user&amp;password=test_pass</postgres>
 					<dsl>src/test/resources/dsl</dsl>
-					<apply>true</apply>
+					<applySql>true</applySql>
 				</configuration>
 			</plugin>
 		</plugins>

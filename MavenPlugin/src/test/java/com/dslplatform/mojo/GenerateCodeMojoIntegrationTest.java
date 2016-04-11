@@ -2,6 +2,8 @@ package com.dslplatform.mojo;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
+import org.apache.maven.project.MavenProject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +34,7 @@ public class GenerateCodeMojoIntegrationTest extends AbstractMojoTestCase {
 
 		GenerateCodeMojo mojo = (GenerateCodeMojo) lookupMojo(GenerateCodeMojo.GOAL, pom);
 		assertNotNull(mojo);
+		mojo.setProject(new MavenProjectStub());
 		mojo.execute();
 
 		String sourcesPath = mojo.getGeneratedSourcesTarget();

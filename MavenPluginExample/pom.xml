@@ -32,7 +32,7 @@
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate-code</goal>
-                            <goal>apply-migration</goal>
+                            <goal>sql-migration</goal>
                         </goals>
                         <configuration>
                             <generatedSourcesTarget>target/generated-sources</generatedSourcesTarget>
@@ -40,7 +40,7 @@
                             <target>revenj.java</target>
                             <dsl>src/main/resources/dsl</dsl>
                             <postgres>localhost:5432/test_db?user=test_user&amp;password=test_pass</postgres>
-                            <apply>true</apply>
+                            <applySql>true</applySql>
                         </configuration>
                     </execution>
                 </executions>

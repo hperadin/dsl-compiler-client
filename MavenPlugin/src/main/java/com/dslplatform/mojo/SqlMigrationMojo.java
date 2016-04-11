@@ -15,10 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Mojo(name = ApplyMigrationMojo.GOAL)
-public class ApplyMigrationMojo extends AbstractMojo {
+@Mojo(name = SqlMigrationMojo.GOAL)
+public class SqlMigrationMojo extends AbstractMojo {
 
-	public static final String GOAL = "apply-migration";
+	public static final String GOAL = "sql-migration";
 
 	@Parameter(name = "dsl", property = "dsl", defaultValue = "dsl")
 	private String dslPath;
@@ -32,8 +32,8 @@ public class ApplyMigrationMojo extends AbstractMojo {
 	@Parameter(name = "oracle", property = "oracle")
 	private String oracleConnectionString;
 
-	@Parameter(name = "apply", property = "apply", defaultValue = "true")
-	private boolean apply;
+	@Parameter(name = "applySql", property = "applySql", defaultValue = "true")
+	private boolean applySql;
 
 	private Map<CompileParameter, String> compileParametersParsed = new HashMap<CompileParameter, String>();
 	private Map<Settings.Option, String> flagsParsed = new HashMap<Settings.Option, String>();
@@ -93,7 +93,7 @@ public class ApplyMigrationMojo extends AbstractMojo {
 				.with(Prompt.INSTANCE)
 				.with(Settings.Option.SOURCE_ONLY);
 
-		if (this.apply) context.with(ApplyMigration.INSTANCE);
+		if (this.applySql) context.with(ApplyMigration.INSTANCE);
 
 		List<CompileParameter> params = Main.initializeParameters(context, ".");
 
